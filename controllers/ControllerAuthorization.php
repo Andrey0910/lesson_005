@@ -11,8 +11,8 @@ namespace App;
 
 class ControllerAuthorization extends MainController
 {
-    public function index()
+    public function index($nameView)
     {
-        $this->view->authorization();
+        $this->view->render($nameView);
     }
 }

@@ -11,7 +11,7 @@ namespace App;
 
 class ControllerList extends MainController
 {
-    public function index(){
-        $this->view->list();
+    public function index($nameView){
+        $this->view->render($nameView);
     }
 }

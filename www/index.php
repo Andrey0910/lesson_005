@@ -29,7 +29,7 @@ try{
         throw new Exception("Class not found");
     }
     if (method_exists($controller, $actionName)){
-        $controller->$actionName();
+        $controller->$actionName(strtolower($controllerName));
     }
     else{
         throw new Exception("Method not found");
