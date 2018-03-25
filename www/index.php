@@ -1,4 +1,7 @@
 <?php
+require_once "../core/MainController.php";
+require_once "../core/MainView.php";
+require_once "../models/ModelUsers.php";
 $router = explode('/', $_SERVER['REQUEST_URI']);
 $controllerName = "Main";
 $actionName = "index";
