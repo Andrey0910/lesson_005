@@ -3,7 +3,7 @@ require_once "../core/MainController.php";
 require_once "../core/MainView.php";
 require_once "../models/ModelUsers.php";
 $router = explode('/', $_SERVER['REQUEST_URI']);
-$controllerName = "Main";
+$controllerName = "authorization";
 $actionName = "index";
 //Получаем контроллер
 if (!empty($router[1])){
@@ -13,7 +13,7 @@ if (!empty($router[1])){
 if (!empty($router[2])){
     $actionName = $router[2];
 }
-$fileName = "../controllers/".strtolower($controllerName).".php";
+$fileName = "../controllers/Controller".ucfirst(strtolower($controllerName)).".php";
 try{
     if (file_exists($fileName)){
         require_once $fileName;
@@ -21,7 +21,7 @@ try{
     else{
         throw new Exception ("File not found");
     }
-    $className = '\App\\'.$controllerName;
+    $className = '\App\\Controller'.$controllerName;
     if (class_exists($className)){
         $controller = new $className;
     }
