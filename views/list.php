@@ -1,3 +1,11 @@
+<?php
+session_start();
+$user = null;
+if (!empty($_SESSION["user"])) {
+    $user = $_SESSION["user"];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -50,7 +58,11 @@
     </nav>
 
     <div class="container">
+        <?php if (!empty($user)): ?>  <p>Добрый день <?=$user?>!<br><a href="authorization/logout">Выйти</a></p>
+        <?php endif; ?>
     <h1>Запретная зона, доступ только авторизированному пользователю</h1>
+
+        <?php if (!empty($user)): ?>
       <h2>Информация выводится из базы данных</h2>
       <table class="table table-bordered">
         <tr>
@@ -72,7 +84,7 @@
           </td>
         </tr>
       </table>
-
+        <?php endif; ?>
     </div><!-- /.container -->
 
 

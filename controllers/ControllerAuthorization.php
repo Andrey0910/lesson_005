@@ -15,4 +15,24 @@ class ControllerAuthorization extends MainController
     {
         $this->view->render($nameView);
     }
+    public function authorization(){
+        $login = $_POST['login'];
+        $password = $_POST['password'];
+        $modelUsers = new ModelUsers();
+        $data = $modelUsers->userExist($login, $password);
+        if (count($data) > 0){
+            $name = $data[0]->name;
+            session_start();
+            $_SESSION["user"] = $name;
+            header("Location: /list");
+        }
+        else{
+            header("Location: /reg");
+        }
+    }
+    public function logout(){
+        session_start();
+        $_SESSION["user"] = null;
+        header("Location: /authorization");
+    }
 }

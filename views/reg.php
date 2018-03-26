@@ -1,3 +1,10 @@
+<?php
+session_start();
+$user = null;
+if (!empty($_SESSION["user"])) {
+    $user = $_SESSION["user"];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -50,7 +57,8 @@
     </nav>
 
     <div class="container">
-
+        <?php if (!empty($user)): ?>  <p>Добрый день <?=$user?>!<br><a href="authorization/logout">Выйти</a></p>
+        <?php else : ?>
       <div class="form-container">
         <form class="form-horizontal" action="">
           <div class="form-group">
@@ -75,12 +83,12 @@
             <div class="col-sm-offset-2 col-sm-10">
               <button type="submit" class="btn btn-default">Зарегистрироваться</button>
               <br><br>
-              Зарегистрированы? <a href="authorization.php">Авторизируйтесь</a>
+              Зарегистрированы? <a href="authorization">Авторизируйтесь</a>
             </div>
           </div>
         </form>
       </div>
-
+        <?php endif; ?>
     </div><!-- /.container -->
 
 
