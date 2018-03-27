@@ -1,8 +1,16 @@
 <?php
-session_start();
+session_start(); //должно находиться до первого вывода в браузер
 $user = null;
 if (!empty($_SESSION["user"])) {
     $user = $_SESSION["user"];
+}
+$passwordRepeat = "yes";
+if(!empty($_SESSION["passwordRepeat"])){
+    $passwordRepeat = $_SESSION["passwordRepeat"];
+}
+$typePhoto = "yes";
+if (!empty($_SESSION["typePhoto"])){
+    $typePhoto = $_SESSION["typePhoto"];
 }
 ?>
 <!DOCTYPE html>
@@ -59,26 +67,54 @@ if (!empty($_SESSION["user"])) {
     <div class="container">
         <?php if (!empty($user)): ?>  <p>Добрый день <?=$user?>!<br><a href="authorization/logout">Выйти</a></p>
         <?php else : ?>
+            <?php if ($passwordRepeat == "no"): ?>  <p>Пароли не совпадают. Попробуйте еще раз.</p>
+            <?php endif; ?>
+            <?php if ($typePhoto == "no"): ?>  <p>Фото можно загружать только в формате "jpg"</p>
+            <?php endif; ?>
       <div class="form-container">
-        <form class="form-horizontal" action="">
+        <form class="form-horizontal" action="reg/reg" method="post">
           <div class="form-group">
             <label for="inputEmail3" class="col-sm-2 control-label">Логин</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputEmail3" placeholder="Логин">
+              <input name="login" type="text" class="form-control" id="inputEmail3" placeholder="Логин">
             </div>
           </div>
           <div class="form-group">
             <label for="inputPassword3" class="col-sm-2 control-label">Пароль</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" id="inputPassword3" placeholder="Пароль">
+              <input name="password" type="password" class="form-control" id="inputPassword3" placeholder="Пароль">
             </div>
           </div>
           <div class="form-group">
             <label for="inputPassword4" class="col-sm-2 control-label">Пароль (Повтор)</label>
             <div class="col-sm-10">
-              <input type="password" class="form-control" id="inputPassword4" placeholder="Пароль">
+              <input name="passwordRepeat" type="password" class="form-control" id="inputPassword4" placeholder="Пароль">
             </div>
           </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Имя</label>
+                <div class="col-sm-10">
+                    <input name="name" type="text" class="form-control" id="inputEmail3" placeholder="Имя">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Возраст</label>
+                <div class="col-sm-10">
+                    <input name="age" type="text" class="form-control" id="inputEmail3" placeholder="Возраст">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Описание</label>
+                <div class="col-sm-10">
+                    <input name="description" type="text" class="form-control" id="inputEmail3" placeholder="Описание">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Фото</label>
+                <div class="col-sm-10">
+                    <input name="photo" type="file" class="form-control" id="inputEmail3" placeholder="Фото" style="border: none">
+                </div>
+            </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <button type="submit" class="btn btn-default">Зарегистрироваться</button>
@@ -86,6 +122,7 @@ if (!empty($_SESSION["user"])) {
               Зарегистрированы? <a href="authorization">Авторизируйтесь</a>
             </div>
           </div>
+
         </form>
       </div>
         <?php endif; ?>

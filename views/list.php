@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(); //должно находиться до первого вывода в браузер
 $user = null;
 if (!empty($_SESSION["user"])) {
     $user = $_SESSION["user"];

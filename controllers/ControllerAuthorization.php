@@ -19,11 +19,18 @@ class ControllerAuthorization extends MainController
         $login = $_POST['login'];
         $password = $_POST['password'];
         $modelUsers = new ModelUsers();
-        $data = $modelUsers->userExist($login, $password);
-        if (count($data) > 0){
-            $name = $data[0]->name;
+        $data = $modelUsers->getUserLogin($login);
+        $user = null;
+        foreach ($data as $item){
+            $passwordHash = $item->password;
+            if (password_verify($password, $passwordHash)){
+                $user = $item;
+                break;
+            }
+        }
+        if (!empty($user)){
             session_start();
-            $_SESSION["user"] = $name;
+            $_SESSION["user"] = $user->login;
             header("Location: /list");
         }
         else{

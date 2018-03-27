@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-//require_once ("../app/db.php");
+
 class ModelUsers
 {
     protected $pdo;
@@ -18,7 +18,7 @@ class ModelUsers
 
         try {
             //Connect to MySQL using the PDO object.
-            $this->pdo = new \PDO(
+            $this->pdo = new \PDO(  // обратный слеш говорит о глобальнои пространсте имен
                 sprintf('mysql:host=%s;dbname=%s', $pdoConfig->host,$pdoConfig->dbname),
                 $pdoConfig->username,
                 $pdoConfig->password
@@ -33,7 +33,36 @@ class ModelUsers
     {
         $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE login = :login AND password = :password ORDER BY id DESC LIMIT 1');
         $prepare->execute(['login' => $login, 'password' => $password]);
-        $data = $prepare->fetchAll(\PDO::FETCH_OBJ);
+        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
+        return $data;
+    }
+    public function userReg($data){
+        $prepare = $this->pdo->prepare('INSERT INTO users_data(login,
+                                                              password,
+                                                              name,
+                                                              age,
+                                                              description,
+                                                              photo
+                                                              ) VALUE (:login,
+                                                                        :password,
+                                                                        :name,
+                                                                        :age,
+                                                                        :description,
+                                                                        :photo
+                                                               )');
+        $prepare->execute([
+            'login' => $data['login'],
+            'password' => $data['password'],
+            'name' => $data['name'],
+            'age' => $data['age'],
+            'description' => $data['description'],
+            'photo' => $data['photo']
+        ]);
+    }
+    public function getUserLogin($login){
+        $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE login = :login');
+        $prepare->execute(['login' => $login]);
+        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
         return $data;
     }
 }
