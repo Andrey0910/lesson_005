@@ -8,10 +8,6 @@ $passwordRepeat = "yes";
 if(!empty($_SESSION["passwordRepeat"])){
     $passwordRepeat = $_SESSION["passwordRepeat"];
 }
-$typePhoto = "yes";
-if (!empty($_SESSION["typePhoto"])){
-    $typePhoto = $_SESSION["typePhoto"];
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,8 +64,6 @@ if (!empty($_SESSION["typePhoto"])){
         <?php if (!empty($user)): ?>  <p>Добрый день <?=$user?>!<br><a href="authorization/logout">Выйти</a></p>
         <?php else : ?>
             <?php if ($passwordRepeat == "no"): ?>  <p>Пароли не совпадают. Попробуйте еще раз.</p>
-            <?php endif; ?>
-            <?php if ($typePhoto == "no"): ?>  <p>Фото можно загружать только в формате "jpg"</p>
             <?php endif; ?>
       <div class="form-container">
         <form class="form-horizontal" action="reg/reg" enctype="multipart/form-data" method="post">
