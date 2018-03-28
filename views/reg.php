@@ -72,7 +72,7 @@ if (!empty($_SESSION["typePhoto"])){
             <?php if ($typePhoto == "no"): ?>  <p>Фото можно загружать только в формате "jpg"</p>
             <?php endif; ?>
       <div class="form-container">
-        <form class="form-horizontal" action="reg/reg" method="post">
+        <form class="form-horizontal" action="reg/reg" enctype="multipart/form-data" method="post">
           <div class="form-group">
             <label for="inputEmail3" class="col-sm-2 control-label">Логин</label>
             <div class="col-sm-10">

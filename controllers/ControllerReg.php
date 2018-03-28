@@ -26,17 +26,21 @@ class ControllerReg extends MainController
         $age = $_POST['age'];
         $description = $this->clearAll($_POST['description']);
         $photo = $_POST['photo'];
+        $file = $_FILES['photo'];
+        //var_dump(__DIR__ . "/". $_FILES["name"] );
+        //die();
+        $this->getImage($file);
         //var_dump($_FILES);
         //die();
         //echo "-----".$photo;
-        $this->moveFile();
-        $typePhoto = end(explode('.', $photo));
+        //$this->moveFile();
+        //$typePhoto = end(explode('.', $photo));
         session_start();
         $_SESSION["typePhoto"] = "yes";
-        if (!$this->getImage($photo)) {
-            $_SESSION["typePhoto"] = "no";
-            header("Location: /reg");
-        }
+//        if (!$this->getImage($photo)) {
+//            $_SESSION["typePhoto"] = "no";
+//            header("Location: /reg");
+//        }
         if (empty($password) && empty($passwordRepeat)) {
             header("Location: /reg");
         }
@@ -72,16 +76,27 @@ class ControllerReg extends MainController
 
     public function moveFile()
     {
-        $file = $_FILES['file'];
-        if (preg_match('/jpg/' . $file['name']) //jpg
-            or preg_match('/png/' . $file['name'])
-            or preg_match('/gif/' . $file['name'])
+        $file = $_FILES['photo'];
+        $pathFile = $file['tmp_name'];
+        $nameFile = $file['name'];
+        echo "<br>", "pathFile == ".$pathFile;
+        echo "<br>", "nameFile == ".$nameFile;
+        move_uploaded_file("D:\OSPanel\userdata\temp\php39DA.tmp", "zhivotnye_tigr_21710.jpg");
+        die();
+        if (preg_match('/jpg/', $file['name']) //jpg
+            or preg_match('/png/', $file['name'])
+            or preg_match('/gif/', $file['name'])
         ) {
-            if (preg_match('/jpg/' . $file['type']) //jpg
-                or preg_match('/png/' . $file['type'])
-                or preg_match('/gif/' . $file['type'])
+            $pathFile = $file['tmp_name'];
+            $nameFile = $file['name'];
+            die();
+            echo $file['name'];
+            echo "<br>", $file['type'];
+            if (!$this->getImage($file['tmp_name'])//preg_match('/jpg/', $file['type']) //jpg
+                or preg_match('/png/', $file['type'])
+                or preg_match('/gif/', $file['type'])
             ) {
-                move_uploaded_file($file['tmp_name'], '/../photo/' . $file['name']);
+                move_uploaded_file($file['tmp_name'], $file['name']);
             }
         } else {
             die("Ошибка загрузки файла.");
@@ -89,10 +104,26 @@ class ControllerReg extends MainController
         }
     }
 
-    public function getImage($photo)
+    public function getImage($file)
     {
-        $data = file_get_contents($photo);
+        $pathTempFile = $file['tmp_name'];
+        $nameFile = $file['name'];
+        $data = file_get_contents($pathTempFile);
         $img = imagecreatefromstring($data);
-        return $img;
+        if (!$img){
+            die("Ошибка загрузки файла.");
+            echo "<a href='/reg'>Назад</a>";
+        }
+        $dir = "photo";
+        //$file = (string)time().".txt";
+        if (!file_exists($dir)) {
+            mkdir($dir, 0700, true);
+        }
+        $path = "./".$dir."/".$nameFile;
+        //file_put_contents($path, $img);
+        file_put_contents(imagejpeg($img));
+        //file_put_contents($path, imagejpeg($img));
+        imagedestroy($img);
+        //return $img;
     }
 }
