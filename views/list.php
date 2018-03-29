@@ -83,6 +83,18 @@ if (!empty($_SESSION["user"])) {
             <a href="">Удалить пользователя</a>
           </td>
         </tr>
+        <?php foreach ($data as $item): ?>
+                <tr>
+                    <td><?=$item->login?></td>
+                    <td><?=$item->name?></td>
+                    <td><?=$item->age?></td>
+                    <td><?=$item->description?></td>
+                    <td><img src="/photo/<?=$item->photo?>" alt=""></td>
+                    <td>
+                        <a href="/list/rowDelite">Удалить пользователя</a>
+                    </td>
+                </tr>
+          <?php endforeach; ?>
       </table>
         <?php endif; ?>
     </div><!-- /.container -->

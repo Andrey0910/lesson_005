@@ -2,6 +2,7 @@
 require_once "../core/MainController.php";
 require_once "../core/MainView.php";
 require_once "../models/ModelUsers.php";
+require ("../vendor/autoload.php");
 $router = explode('/', $_SERVER['REQUEST_URI']);
 $controllerName = "authorization";
 $actionName = "index";

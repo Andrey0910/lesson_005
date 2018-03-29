@@ -8,7 +8,7 @@
 
 namespace App;
 
-
+use Intervention\Image\ImageManager;
 class ControllerReg extends MainController
 {
     public function index($nameView)
@@ -25,7 +25,7 @@ class ControllerReg extends MainController
         $name = $_POST['name'];
         $age = $_POST['age'];
         $description = $this->clearAll($_POST['description']);
-        $photo = $_POST['photo'];
+        $photo =  $_FILES['photo']['name'];
         session_start();
         if (empty($password) && empty($passwordRepeat)) {
             header("Location: /reg");
@@ -33,6 +33,7 @@ class ControllerReg extends MainController
         $_SESSION["passwordRepeat"] = "yes";
         if (!empty($login) && $password == $passwordRepeat) {
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            $this->moveFile();
             $data = [
                 'login' => $login,
                 'password' => $password_hash,
@@ -49,7 +50,6 @@ class ControllerReg extends MainController
             $_SESSION["passwordRepeat"] = "no";
             header("Location: /reg");
         }
-        $this->moveFile();
     }
 
     //Очишаем вводимую информацию от вреданосного кода.
@@ -76,11 +76,21 @@ class ControllerReg extends MainController
                 echo "Ошибка загрузки файла.", "<a href='/reg'>Назад</a>";
                 die();
             }
-            $dir = "../photo";
+            $dir = "../www/photo";
             if (!file_exists($dir)) {
                 mkdir($dir, 0700, true);
             }
-            move_uploaded_file($pathFile, $dir ."/".$nameFile);
+            // create an image manager instance with favored driver
+            $manager = new ImageManager(array('driver' => 'imagick'));
+
+            // to finally create image instances
+            $img =$manager->make($pathFile);
+
+            $img->resize(100, 100);
+
+            $img->save($dir ."/".$nameFile);
+            //move_uploaded_file($pathFile, $dir ."/".$nameFile);
+
         } else {
             echo "Ошибка загрузки файла.", "<a href='/reg'>Назад</a>";
             die();

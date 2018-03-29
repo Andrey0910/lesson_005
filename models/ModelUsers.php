@@ -65,4 +65,14 @@ class ModelUsers
         $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
         return $data;
     }
+    public function getAll()
+    {
+        $prepare = $this->pdo->prepare('SELECT * FROM users_data');
+        $prepare->execute();
+        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
+        return $data;
+    }
+    public function rowDelite($id){
+
+    }
 }
