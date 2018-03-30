@@ -14,6 +14,7 @@ class ControllerList extends MainController
     public function index($nameView){
         $modelUsers = new ModelUsers();
         $data = $modelUsers->getAll();
+
         $this->view->render($nameView, $data);
     }
     public function rowDelete($nameView){

@@ -25,7 +25,7 @@ class ControllerReg extends MainController
         $name = $_POST['name'];
         $age = $_POST['age'];
         $description = $this->clearAll($_POST['description']);
-        $photo =  $_FILES['photo']['name'];
+        $photo =  (string)random_int(0, 10000).$_FILES['photo']['name'];
         session_start();
         if (empty($password) && empty($passwordRepeat)) {
             header("Location: /reg");
@@ -33,7 +33,7 @@ class ControllerReg extends MainController
         $_SESSION["passwordRepeat"] = "yes";
         if (!empty($login) && $password == $passwordRepeat) {
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $this->moveFile();
+            $this->moveFile($photo);
             $data = [
                 'login' => $login,
                 'password' => $password_hash,
@@ -61,21 +61,19 @@ class ControllerReg extends MainController
         return $data;
     }
 
-    public function moveFile()
+    public function moveFile($nameFile)
     {
         $file = $_FILES['photo'];
-        $file_path_parts = pathinfo($file['name']);
-        $fileExtension = $file_path_parts['extension'];
-        $path_parts = pathinfo($file['tmp_name']);
-        $pathDit = $path_parts['dirname'];
-        $pathFile = $pathDit. "\hpoto.".$fileExtension;
-        rename($file['tmp_name'], $pathFile);
-        //$pathFile = $file['tmp_name'];
-        $nameFile = $_POST['login'].$file['name'];
+        $pathFile = $file['tmp_name'];
+        //$nameFile = $_POST['login'].$file['name'];
         if (preg_match('/jpg/', $file['name']) //jpg
             or preg_match('/png/', $file['name'])
             or preg_match('/gif/', $file['name'])
         ) {
+            if (!file_exists($pathFile)){
+                echo "Ошибка загрузки файла.", "<a href='/reg'>Назад</a>";
+                die();
+            }
             $data = file_get_contents($pathFile);
             $img = imagecreatefromstring($data);
             if (!$img){
@@ -87,23 +85,26 @@ class ControllerReg extends MainController
                 mkdir($dir, 0700, true);
             }
             $pathLocal = $dir ."/".$nameFile;
-            //$this->reSize($pathFile, $pathLocal);
-            move_uploaded_file($pathFile, $pathLocal);
+            $this->reSize($pathFile, $pathLocal);
+            //move_uploaded_file($pathFile, $pathLocal);
         } else {
             echo "Ошибка загрузки файла.", "<a href='/reg'>Назад</a>";
             die();
         }
     }
     public function reSize($pathFile, $pathLocal){
-        // create an image manager instance with favored driver
-        $manager = new ImageManager(array('driver' => 'imagick'));
+        try {
+            // create an image manager instance with favored driver
+            $manager = new ImageManager(array('driver' => 'gd')); // Вместо "imagick" должно быть прописано "gd"
 
-        // to finally create image instances
-        $img =$manager->make($pathFile);
-        //$img = $manager->make("D:\OSPanel\userdata\temp\photo.jpg");
+            // to finally create image instances
+            $img = $manager->make($pathFile);
 
-        $img->resize(100, 100);
+            $img->resize(100, 100);
 
-        $img->save($pathLocal);
+            $img->save($pathLocal);
+        }catch (\Exception $e){
+            echo $e->getMessage();
+        }
     }
 }
