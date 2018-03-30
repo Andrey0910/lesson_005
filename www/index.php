@@ -13,6 +13,8 @@ if (!empty($router[1])){
 //Получаем действие
 if (!empty($router[2])){
     $actionName = $router[2];
+    $explode = explode('?', $actionName);
+    $actionName = $explode[0];
 }
 $fileName = "../controllers/Controller".ucfirst(strtolower($controllerName)).".php";
 try{

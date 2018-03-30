@@ -75,6 +75,15 @@ if (!empty($_SESSION["user"])) {
             <a href="">Удалить аватарку пользователя</a>
           </td>
         </tr>
+          <?php foreach ($data as $item): ?>
+          <tr>
+              <td><?= $item->photo ?></td>
+              <td><img src="/photo/<?=$item->photo?>" alt=""></td>
+              <td>
+                  <a href="/filelist/photoDelete?id=<?=$item->id?>&photo=<?=$item->photo?>">Удалить пользователя</a>
+              </td>
+          </tr>
+          <?php endforeach; ?>
       </table>
         <?php endif; ?>
     </div><!-- /.container -->

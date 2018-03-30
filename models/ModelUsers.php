@@ -72,7 +72,21 @@ class ModelUsers
         $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
         return $data;
     }
-    public function rowDelite($id){
-
+    public function rowDelete($id){
+        $prepare = $this->pdo->prepare('DELETE FROM users_data WHERE id = :id');
+        $prepare->execute(['id' => $id]);
+        //$data = $prepare->fetchAll(\PDO::FETCH_OBJ);
+    }
+    public function getAllPhoto()
+    {
+        $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE photo IS NOT NULL AND photo <> \'\'');
+        $prepare->execute();
+        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
+        return $data;
+    }
+    public function photoDelete($id){
+        $prepare = $this->pdo->prepare('UPDATE users_data SET photo = NULL WHERE id = :id');
+        $prepare->execute(['id' => $id]);
+        //$data = $prepare->fetchAll(\PDO::FETCH_OBJ);
     }
 }

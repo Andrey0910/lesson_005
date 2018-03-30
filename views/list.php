@@ -91,7 +91,7 @@ if (!empty($_SESSION["user"])) {
                     <td><?=$item->description?></td>
                     <td><img src="/photo/<?=$item->photo?>" alt=""></td>
                     <td>
-                        <a href="/list/rowDelite">Удалить пользователя</a>
+                        <a href="/list/rowDelete?id=<?=$item->id?>&photo=<?=$item->photo?>">Удалить пользователя</a>
                     </td>
                 </tr>
           <?php endforeach; ?>

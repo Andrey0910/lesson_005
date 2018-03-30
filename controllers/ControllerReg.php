@@ -8,7 +8,7 @@
 
 namespace App;
 
-use Intervention\Image\ImageManager;
+use \Intervention\Image\ImageManager;
 class ControllerReg extends MainController
 {
     public function index($nameView)
@@ -64,8 +64,14 @@ class ControllerReg extends MainController
     public function moveFile()
     {
         $file = $_FILES['photo'];
-        $pathFile = $file['tmp_name'];
-        $nameFile = $file['name'];
+        $file_path_parts = pathinfo($file['name']);
+        $fileExtension = $file_path_parts['extension'];
+        $path_parts = pathinfo($file['tmp_name']);
+        $pathDit = $path_parts['dirname'];
+        $pathFile = $pathDit. "\hpoto.".$fileExtension;
+        rename($file['tmp_name'], $pathFile);
+        //$pathFile = $file['tmp_name'];
+        $nameFile = $_POST['login'].$file['name'];
         if (preg_match('/jpg/', $file['name']) //jpg
             or preg_match('/png/', $file['name'])
             or preg_match('/gif/', $file['name'])
@@ -80,20 +86,24 @@ class ControllerReg extends MainController
             if (!file_exists($dir)) {
                 mkdir($dir, 0700, true);
             }
-            // create an image manager instance with favored driver
-            $manager = new ImageManager(array('driver' => 'imagick'));
-
-            // to finally create image instances
-            $img =$manager->make($pathFile);
-
-            $img->resize(100, 100);
-
-            $img->save($dir ."/".$nameFile);
-            //move_uploaded_file($pathFile, $dir ."/".$nameFile);
-
+            $pathLocal = $dir ."/".$nameFile;
+            //$this->reSize($pathFile, $pathLocal);
+            move_uploaded_file($pathFile, $pathLocal);
         } else {
             echo "Ошибка загрузки файла.", "<a href='/reg'>Назад</a>";
             die();
         }
+    }
+    public function reSize($pathFile, $pathLocal){
+        // create an image manager instance with favored driver
+        $manager = new ImageManager(array('driver' => 'imagick'));
+
+        // to finally create image instances
+        $img =$manager->make($pathFile);
+        //$img = $manager->make("D:\OSPanel\userdata\temp\photo.jpg");
+
+        $img->resize(100, 100);
+
+        $img->save($pathLocal);
     }
 }

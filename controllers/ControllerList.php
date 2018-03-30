@@ -16,4 +16,15 @@ class ControllerList extends MainController
         $data = $modelUsers->getAll();
         $this->view->render($nameView, $data);
     }
+    public function rowDelete($nameView){
+        $id = $_GET['id'];
+        $photo = $_GET['photo'];
+        $modelUsers = new ModelUsers();
+        $modelUsers->rowDelete($id);
+        $pathFile = "../www/photo/".$photo;
+        if (file_exists($pathFile) && !empty($photo)){
+            unlink($pathFile);
+        }
+        header("Location: /".$nameView);
+    }
 }
