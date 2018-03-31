@@ -9,6 +9,7 @@
 namespace App;
 
 use \Intervention\Image\ImageManager;
+
 class ControllerReg extends MainController
 {
     public function index($nameView)
@@ -24,31 +25,35 @@ class ControllerReg extends MainController
         $passwordRepeat = $_POST['passwordRepeat'];
         $name = $_POST['name'];
         $age = $_POST['age'];
-        $description = $this->clearAll($_POST['description']);
-        $photo =  (string)random_int(0, 10000).$_FILES['photo']['name'];
-        session_start();
-        if (empty($password) && empty($passwordRepeat)) {
-            header("Location: /reg");
-        }
-        $_SESSION["passwordRepeat"] = "yes";
-        if (!empty($login) && $password == $passwordRepeat) {
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $this->moveFile($photo);
-            $data = [
-                'login' => $login,
-                'password' => $password_hash,
-                'name' => $name,
-                'age' => $age,
-                'description' => $description,
-                'photo' => $photo
-            ];
-            $modelUsers = new ModelUsers();
-            $modelUsers->userReg($data);
-            $_SESSION["user"] = $login;
-            header("Location: /list");
-        } else {
-            $_SESSION["passwordRepeat"] = "no";
-            header("Location: /reg");
+        try {
+            $description = $this->clearAll($_POST['description']);
+            $photo = (string)random_int(0, 10000) . $_FILES['photo']['name'];
+            session_start();
+            if (empty($password) && empty($passwordRepeat)) {
+                header("Location: /reg");
+            }
+            $_SESSION["passwordRepeat"] = "yes";
+            if (!empty($login) && $password == $passwordRepeat) {
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+                $this->moveFile($photo);
+                $data = [
+                    'login' => $login,
+                    'password' => $password_hash,
+                    'name' => $name,
+                    'age' => $age,
+                    'description' => $description,
+                    'photo' => $photo
+                ];
+                $modelUsers = new ModelUsers();
+                $modelUsers->userReg($data);
+                $_SESSION["user"] = $login;
+                header("Location: /list");
+            } else {
+                $_SESSION["passwordRepeat"] = "no";
+                header("Location: /reg");
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
     }
 
@@ -70,13 +75,13 @@ class ControllerReg extends MainController
             or preg_match('/png/', $file['name'])
             or preg_match('/gif/', $file['name'])
         ) {
-            if (!file_exists($pathFile)){
+            if (!file_exists($pathFile)) {
                 echo "Ошибка загрузки файла.", "<a href='/reg'>Назад</a>";
                 die();
             }
             $data = file_get_contents($pathFile);
             $img = imagecreatefromstring($data);
-            if (!$img){
+            if (!$img) {
                 echo "Ошибка загрузки файла.", "<a href='/reg'>Назад</a>";
                 die();
             }
@@ -84,7 +89,7 @@ class ControllerReg extends MainController
             if (!file_exists($dir)) {
                 mkdir($dir, 0700, true);
             }
-            $pathLocal = $dir ."/".$nameFile;
+            $pathLocal = $dir . "/" . $nameFile;
             $this->reSize($pathFile, $pathLocal);
             //move_uploaded_file($pathFile, $pathLocal);
         } else {
@@ -92,7 +97,9 @@ class ControllerReg extends MainController
             die();
         }
     }
-    public function reSize($pathFile, $pathLocal){
+
+    public function reSize($pathFile, $pathLocal)
+    {
         try {
             // create an image manager instance with favored driver
             $manager = new ImageManager(array('driver' => 'gd')); // Вместо "imagick" должно быть прописано "gd"
@@ -103,7 +110,7 @@ class ControllerReg extends MainController
             $img->resize(100, 100);
 
             $img->save($pathLocal);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             echo $e->getMessage();
         }
     }

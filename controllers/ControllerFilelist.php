@@ -11,20 +11,31 @@ namespace App;
 
 class ControllerFilelist extends MainController
 {
-    public function index($nameView){
-        $modelUsers = new ModelUsers();
-        $data = $modelUsers->getAllPhoto();
-        $this->view->render($nameView, $data);
+    public function index($nameView)
+    {
+        try {
+            $modelUsers = new ModelUsers();
+            $data = $modelUsers->getAllPhoto();
+            $this->view->render($nameView, $data);
+        } catch (\Exception $e) {
+            $e->getMessage();
+        }
     }
-    public function photoDelete($nameView){
+
+    public function photoDelete($nameView)
+    {
         $id = $_GET['id'];
         $photo = $_GET['photo'];
-        $modelUsers = new ModelUsers();
-        $modelUsers->rowDelete($id);
-        $pathFile = "../www/photo/".$photo;
-        if (file_exists($pathFile) && !empty($photo)){
-            unlink($pathFile);
+        try {
+            $modelUsers = new ModelUsers();
+            $modelUsers->rowDelete($id);
+            $pathFile = "../www/photo/" . $photo;
+            if (file_exists($pathFile) && !empty($photo)) {
+                unlink($pathFile);
+            }
+            header("Location: /" . $nameView);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
-        header("Location: /".$nameView);
     }
 }

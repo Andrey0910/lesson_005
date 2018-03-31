@@ -5,21 +5,24 @@ namespace App;
 class ModelUsers
 {
     protected $pdo;
+
     public function __construct()
     {
         $this->connect();
     }
+
     //Соединение с базой данный
-    protected function connect(){
+    protected function connect()
+    {
         // подключаем настройки базы данных
-        $config = include (__DIR__ . DIRECTORY_SEPARATOR . 'config.php');
+        $config = include(__DIR__ . DIRECTORY_SEPARATOR . 'config.php');
 
         $pdoConfig = (object)$config["db"];
 
         try {
             //Connect to MySQL using the PDO object.
             $this->pdo = new \PDO(  // обратный слеш говорит о глобальнои пространсте имен
-                sprintf('mysql:host=%s;dbname=%s', $pdoConfig->host,$pdoConfig->dbname),
+                sprintf('mysql:host=%s;dbname=%s', $pdoConfig->host, $pdoConfig->dbname),
                 $pdoConfig->username,
                 $pdoConfig->password
             );
@@ -29,14 +32,16 @@ class ModelUsers
         }
     }
 
-    public function userExist($login=null, $password=null)
+    public function userExist($login = null, $password = null)
     {
         $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE login = :login AND password = :password ORDER BY id DESC LIMIT 1');
         $prepare->execute(['login' => $login, 'password' => $password]);
         $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
         return $data;
     }
-    public function userReg($data){
+
+    public function userReg($data)
+    {
         $prepare = $this->pdo->prepare('INSERT INTO users_data(login,
                                                               password,
                                                               name,
@@ -59,12 +64,15 @@ class ModelUsers
             'photo' => $data['photo']
         ]);
     }
-    public function getUserLogin($login){
+
+    public function getUserLogin($login)
+    {
         $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE login = :login');
         $prepare->execute(['login' => $login]);
         $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
         return $data;
     }
+
     public function getAll()
     {
         $prepare = $this->pdo->prepare('SELECT * FROM users_data');
@@ -72,11 +80,13 @@ class ModelUsers
         $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
         return $data;
     }
-    public function rowDelete($id){
+
+    public function rowDelete($id)
+    {
         $prepare = $this->pdo->prepare('DELETE FROM users_data WHERE id = :id');
         $prepare->execute(['id' => $id]);
-        //$data = $prepare->fetchAll(\PDO::FETCH_OBJ);
     }
+
     public function getAllPhoto()
     {
         $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE photo IS NOT NULL AND photo <> \'\'');
@@ -84,9 +94,10 @@ class ModelUsers
         $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
         return $data;
     }
-    public function photoDelete($id){
+
+    public function photoDelete($id)
+    {
         $prepare = $this->pdo->prepare('UPDATE users_data SET photo = NULL WHERE id = :id');
         $prepare->execute(['id' => $id]);
-        //$data = $prepare->fetchAll(\PDO::FETCH_OBJ);
     }
 }
