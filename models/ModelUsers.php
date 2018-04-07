@@ -1,103 +1,118 @@
 <?php
 
 namespace App;
+require("../vendor/autoload.php");
+
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Support\Manager;
+
+class User extends \Illuminate\Database\Eloquent\Model
+{
+    protected $table = "users_data";
+}
 
 class ModelUsers
 {
     protected $pdo;
+    protected $capsule;
 
     public function __construct()
     {
-        $this->connect();
-    }
 
-    //Соединение с базой данный
-    protected function connect()
-    {
         // подключаем настройки базы данных
         $config = include(__DIR__ . DIRECTORY_SEPARATOR . 'config.php');
+        $dbConfig = (object)$config["db"];
+        //Соединение с базой данный
+        $this->capsule = new Capsule;
+        $this->capsule->addConnection([
+            'driver' => 'mysql',
+            'host' => $dbConfig->host,
+            'database' => $dbConfig->dbname,
+            'username' => $dbConfig->username,
+            'password' => $dbConfig->password,
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+        ]);
+        // Make this Capsule instance available globally via static methods... (optional)
+        $this->capsule->setAsGlobal();
 
-        $pdoConfig = (object)$config["db"];
-
-        try {
-            //Connect to MySQL using the PDO object.
-            $this->pdo = new \PDO(  // обратный слеш говорит о глобальнои пространсте имен
-                sprintf('mysql:host=%s;dbname=%s', $pdoConfig->host, $pdoConfig->dbname),
-                $pdoConfig->username,
-                $pdoConfig->password
-            );
-        } catch (PDOException $e) {
-            echo "Error connect to database: " . $e->getMessage() . "\n";
-            return null;
-        }
-    }
-
-    public function userExist($login = null, $password = null)
-    {
-        $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE login = :login AND password = :password ORDER BY id DESC LIMIT 1');
-        $prepare->execute(['login' => $login, 'password' => $password]);
-        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
-        return $data;
+        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+        $this->capsule->bootEloquent();
     }
 
     public function userReg($data)
     {
-        $prepare = $this->pdo->prepare('INSERT INTO users_data(login,
-                                                              password,
-                                                              name,
-                                                              age,
-                                                              description,
-                                                              photo
-                                                              ) VALUE (:login,
-                                                                        :password,
-                                                                        :name,
-                                                                        :age,
-                                                                        :description,
-                                                                        :photo
-                                                               )');
-        $prepare->execute([
-            'login' => $data['login'],
-            'password' => $data['password'],
-            'name' => $data['name'],
-            'age' => $data['age'],
-            'description' => $data['description'],
-            'photo' => $data['photo']
-        ]);
+        try {
+            $user = new User();
+            $user->login = $data['login'];
+            $user->password = $data['password'];
+            $user->name = $data['name'];
+            $user->age = $data['age'];
+            $user->description = $data['description'];
+            $user->photo = $data['photo'];
+            $user->save();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
+
 
     public function getUserLogin($login)
     {
-        $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE login = :login');
-        $prepare->execute(['login' => $login]);
-        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
+        $data = [];
+        try {
+            $data = User::where('login', $login)->get();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
         return $data;
     }
 
     public function getAll()
     {
-        $prepare = $this->pdo->prepare('SELECT * FROM users_data');
-        $prepare->execute();
-        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
+        $data = [];
+
+        try {
+            $data = User::all();
+        } catch (\Exception $e) {
+
+            echo $e->getMessage();
+        }
         return $data;
     }
 
     public function rowDelete($id)
     {
-        $prepare = $this->pdo->prepare('DELETE FROM users_data WHERE id = :id');
-        $prepare->execute(['id' => $id]);
+        try {
+            $user = User::find($id);
+            if (!empty($user)) {
+                $user->delete();
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
     public function getAllPhoto()
     {
-        $prepare = $this->pdo->prepare('SELECT * FROM users_data WHERE photo IS NOT NULL AND photo <> \'\'');
-        $prepare->execute();
-        $data = $prepare->fetchAll(\PDO::FETCH_OBJ); // обратный слеш говорит о глобальнои пространсте имен
+        $data = [];
+        try {
+            $data = User::whereNotNull('photo')->get();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
         return $data;
     }
 
     public function photoDelete($id)
     {
-        $prepare = $this->pdo->prepare('UPDATE users_data SET photo = NULL WHERE id = :id');
-        $prepare->execute(['id' => $id]);
+        try {
+            $user = User::find($id);
+            $user->photo = '';
+            $user->save();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 }

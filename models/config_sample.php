@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "db" => [
+    "dump" => [
         "username" => "user", //Имя пользователя
         "password" => "",   //Пароль
         "host" => "aaaa",   //Хост

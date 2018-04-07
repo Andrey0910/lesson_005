@@ -35,9 +35,9 @@ class ControllerAuthorization extends MainController
                 session_start();
                 $_SESSION["user"] = $user->login;
                 header("Location: /list");
-            } else {
-                header("Location: /reg");
+                return;
             }
+            header("Location: /reg");
         } catch (\Exception $e) {
             $e->getMessage();
         }
