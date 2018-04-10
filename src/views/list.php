@@ -1,10 +1,12 @@
 <?php
-session_start();    //должно находиться до первого вывода в браузер
+session_start(); //должно находиться до первого вывода в браузер
 $user = null;
+
 if (!empty($_SESSION["user"])) {
     $user = $_SESSION["user"];
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -18,7 +20,7 @@ if (!empty($_SESSION["user"])) {
     <title>Starter Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="/../css/bootstrap.min.css" rel="stylesheet">
 
 
     <!-- Custom styles for this template -->
@@ -49,8 +51,8 @@ if (!empty($_SESSION["user"])) {
           <ul class="nav navbar-nav">
             <li><a href="authorization">Авторизация</a></li>
             <li><a href="reg">Регистрация</a></li>
-            <li><a href="list">Список пользователей</a></li>
-            <li class="active"><a href="filelist">Список файлов</a></li>
+            <li class="active"><a href="list">Список пользователей</a></li>
+            <li><a href="filelist">Список файлов</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -60,29 +62,58 @@ if (!empty($_SESSION["user"])) {
         <?php if (!empty($user)): ?>  <p>Добрый день <?=$user?>!<br><a href="authorization/logout">Выйти</a></p>
         <?php endif; ?>
     <h1>Запретная зона, доступ только авторизированному пользователю</h1>
+
         <?php if (!empty($user)): ?>
-      <h2>Информация выводится из списка файлов</h2>
+      <h2>Информация выводится из базы данных</h2>
       <table class="table table-bordered">
         <tr>
-          <th>Название файла</th>
+          <th>Пользователь(логин)</th>
+          <th>Имя</th>
+          <th>
+              возраст <br>
+              <a href="/list/orderBy?fieldName=age&orderBy=asc">по возростанию</a><br>
+              <a href="/list/orderBy?fieldName=age&orderBy=desc">по убыванию</a>
+          </th>
+          <th>описание</th>
           <th>Фотография</th>
           <th>Действия</th>
         </tr>
         <tr>
-          <td>1.jpg</td>
+          <td>vasya99</td>
+          <td>Вася</td>
+          <td>14</td>
+          <td>Эксперт в спорах в интернете</td>
           <td><img src="http://lorempixel.com/people/200/200/" alt=""></td>
           <td>
-            <a href="">Удалить аватарку пользователя</a>
+            <a href="">Удалить пользователя</a>
           </td>
         </tr>
-          <?php foreach ($data as $item): ?>
-          <tr>
-              <td><?= $item->photo ?></td>
-              <td><img src="/photo/<?=$item->photo?>" alt=""></td>
-              <td>
-                  <a href="/filelist/photoDelete?id=<?=$item->id?>&photo=<?=$item->photo?>">Удалить пользователя</a>
-              </td>
-          </tr>
+        <?php foreach ($users as $item): ?>
+                <tr>
+                    <td><?=$item->login?></td>
+                    <td><?=$item->name?></td>
+                    <td>
+                        <?php
+                        if (is_numeric($item->age) && $item->age >= 18){
+                            echo $item->age." Совершеннолетний";
+                        }elseif (is_numeric($item->age) && $item->age < 18){
+                            echo $item->age." Несовершеннолетний";
+                        }
+                        ?>
+                    </td>
+                    <td><?=$item->description?></td>
+                    <td><img src="/photo/<?=$item->photo?>" alt=""></td>
+                    <td>
+                        <form method="post" action="list/addPhoto" enctype="multipart/form-data">
+                            <input hidden name="id" value="<?=$item->id?>">
+                            <input type="file" name="photo" placeholder="фото">
+                            <button type="submit">Сохранить</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="/list/rowDelete?id=<?=$item->id?>&photo=<?=$item->photo?>">Удалить пользователя</a>
+                    </td>
+                </tr>
           <?php endforeach; ?>
       </table>
         <?php endif; ?>
@@ -93,8 +124,8 @@ if (!empty($_SESSION["user"])) {
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="/../js/main.js"></script>
+    <script src="/../js/bootstrap.min.js"></script>
 
   </body>
 </html>
